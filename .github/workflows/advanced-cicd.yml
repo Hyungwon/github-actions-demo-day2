@@ -378,7 +378,7 @@ jobs:
           
           # 기존 서비스 중지 (파일이 있는 경우에만)
           if [ -f docker-compose.prod.yml ]; then
-            docker-compose -f docker-compose.prod.yml down
+            docker compose -f docker-compose.prod.yml down
           fi
           
           # 최신 이미지 풀
@@ -449,7 +449,7 @@ jobs:
           
           # 기존 서비스 및 이미지 정리
           echo "🧹 기존 서비스 및 이미지 정리 중..."
-          docker-compose -f docker-compose.prod.yml down --remove-orphans || true
+          docker compose -f docker-compose.prod.yml down --remove-orphans || true
           docker stop $(docker ps -aq) 2>/dev/null || true
           docker rm $(docker ps -aq) 2>/dev/null || true
           docker system prune -a -f || true
@@ -462,11 +462,11 @@ jobs:
           
           # Docker 이미지 강제 재빌드 (참조 프로젝트 가이드 적용)
           echo "🔨 Docker 이미지 강제 재빌드 중..."
-          docker-compose -f docker-compose.prod.yml build --no-cache app
+          docker compose -f docker-compose.prod.yml build --no-cache app
           
           # Docker Compose로 서비스 시작
           echo "🚀 Docker Compose로 서비스 시작 중..."
-          docker-compose -f docker-compose.prod.yml up -d
+          docker compose -f docker-compose.prod.yml up -d
           
           # 서비스 시작 대기
           echo "⏳ 서비스 시작을 기다리는 중..."
@@ -474,7 +474,7 @@ jobs:
           
           # Docker 서비스 상태 확인 (참조 프로젝트 가이드 적용)
           echo "🔍 Docker 서비스 상태 확인..."
-          docker-compose -f docker-compose.prod.yml ps
+          docker compose -f docker-compose.prod.yml ps
           
           # 포트 충돌 확인
           echo "🔍 포트 충돌 확인..."
@@ -483,7 +483,7 @@ jobs:
           
           # 컨테이너 로그 확인
           echo "📋 컨테이너 로그 확인..."
-          docker-compose -f docker-compose.prod.yml logs app | tail -20
+          docker compose -f docker-compose.prod.yml logs app | tail -20
           
           # 모든 서비스가 healthy 상태가 될 때까지 대기 (참조 프로젝트 가이드 적용)
           echo "🏥 서비스 헬스체크 대기 중..."
@@ -491,10 +491,10 @@ jobs:
             echo "헬스체크 대기 시도 $i/30..."
             
             # 모든 서비스 상태 확인
-            if docker-compose -f docker-compose.prod.yml ps | grep -q "unhealthy"; then
+            if docker compose -f docker-compose.prod.yml ps | grep -q "unhealthy"; then
               echo "일부 서비스가 아직 unhealthy 상태입니다..."
               echo "현재 서비스 상태:"
-              docker-compose -f docker-compose.prod.yml ps
+              docker compose -f docker-compose.prod.yml ps
               sleep 10
               continue
             fi
@@ -530,15 +530,15 @@ jobs:
             if [ $i -eq 30 ]; then
               echo "❌ 헬스체크 실패 - 서비스 로그 확인"
               echo "Docker 서비스 상태:"
-              docker-compose -f docker-compose.prod.yml ps
+              docker compose -f docker-compose.prod.yml ps
               echo "app 로그:"
-              docker-compose -f docker-compose.prod.yml logs app
+              docker compose -f docker-compose.prod.yml logs app
               echo "nginx 로그:"
-              docker-compose -f docker-compose.prod.yml logs nginx
+              docker compose -f docker-compose.prod.yml logs nginx
               echo "postgres 로그:"
-              docker-compose -f docker-compose.prod.yml logs postgres
+              docker compose -f docker-compose.prod.yml logs postgres
               echo "redis 로그:"
-              docker-compose -f docker-compose.prod.yml logs redis
+              docker compose -f docker-compose.prod.yml logs redis
               exit 1
             fi
           done
@@ -576,7 +576,7 @@ jobs:
           
           # 기존 서비스 중지 (파일이 있는 경우에만)
           if [ -f docker-compose.prod.yml ]; then
-            docker-compose -f docker-compose.prod.yml down
+            docker compose -f docker-compose.prod.yml down
           fi
           
           # 최신 이미지 풀
@@ -639,7 +639,7 @@ jobs:
           
           # 기존 서비스 및 이미지 정리
           echo "🧹 기존 서비스 및 이미지 정리 중..."
-          docker-compose -f docker-compose.prod.yml down --remove-orphans || true
+          docker compose -f docker-compose.prod.yml down --remove-orphans || true
           docker stop $(docker ps -aq) 2>/dev/null || true
           docker rm $(docker ps -aq) 2>/dev/null || true
           docker system prune -a -f || true
@@ -651,7 +651,7 @@ jobs:
           sleep 10
           
           # Docker Compose로 서비스 시작
-          docker-compose -f docker-compose.prod.yml up -d
+          docker compose -f docker-compose.prod.yml up -d
           
           # 서비스 시작 대기
           echo "⏳ 서비스 시작을 기다리는 중..."
@@ -667,7 +667,7 @@ jobs:
             fi
             if [ $i -eq 10 ]; then
               echo "❌ 헬스체크 실패 - 서비스 로그 확인"
-              docker-compose -f docker-compose.prod.yml logs
+              docker compose -f docker-compose.prod.yml logs
               exit 1
             fi
             sleep 10
@@ -715,7 +715,7 @@ jobs:
           
           # Blue-Green 배포를 위한 백업
           if [ -f docker-compose.prod.yml ]; then
-            docker-compose -f docker-compose.prod.yml down
+            docker compose -f docker-compose.prod.yml down
             docker tag ${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest ${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:backup-$(date +%Y%m%d-%H%M%S)
           fi
           
@@ -779,7 +779,7 @@ jobs:
           
           # 기존 서비스 및 이미지 정리
           echo "🧹 기존 서비스 및 이미지 정리 중..."
-          docker-compose -f docker-compose.prod.yml down --remove-orphans || true
+          docker compose -f docker-compose.prod.yml down --remove-orphans || true
           docker stop $(docker ps -aq) 2>/dev/null || true
           docker rm $(docker ps -aq) 2>/dev/null || true
           docker system prune -a -f || true
@@ -792,11 +792,11 @@ jobs:
           
           # Docker 이미지 강제 재빌드 (참조 프로젝트 가이드 적용)
           echo "🔨 Docker 이미지 강제 재빌드 중..."
-          docker-compose -f docker-compose.prod.yml build --no-cache app
+          docker compose -f docker-compose.prod.yml build --no-cache app
           
           # Docker Compose로 서비스 시작
           echo "🚀 Docker Compose로 서비스 시작 중..."
-          docker-compose -f docker-compose.prod.yml up -d
+          docker compose -f docker-compose.prod.yml up -d
           
           # 서비스 시작 대기
           echo "⏳ 서비스 시작을 기다리는 중..."
@@ -804,7 +804,7 @@ jobs:
           
           # Docker 서비스 상태 확인 (참조 프로젝트 가이드 적용)
           echo "🔍 Docker 서비스 상태 확인..."
-          docker-compose -f docker-compose.prod.yml ps
+          docker compose -f docker-compose.prod.yml ps
           
           # 포트 충돌 확인
           echo "🔍 포트 충돌 확인..."
@@ -813,7 +813,7 @@ jobs:
           
           # 컨테이너 로그 확인
           echo "📋 컨테이너 로그 확인..."
-          docker-compose -f docker-compose.prod.yml logs app | tail -20
+          docker compose -f docker-compose.prod.yml logs app | tail -20
           
           # 모든 서비스가 healthy 상태가 될 때까지 대기 (참조 프로젝트 가이드 적용)
           echo "🏥 서비스 헬스체크 대기 중..."
@@ -821,10 +821,10 @@ jobs:
             echo "헬스체크 대기 시도 $i/30..."
             
             # 모든 서비스 상태 확인
-            if docker-compose -f docker-compose.prod.yml ps | grep -q "unhealthy"; then
+            if docker compose -f docker-compose.prod.yml ps | grep -q "unhealthy"; then
               echo "일부 서비스가 아직 unhealthy 상태입니다..."
               echo "현재 서비스 상태:"
-              docker-compose -f docker-compose.prod.yml ps
+              docker compose -f docker-compose.prod.yml ps
               sleep 10
               continue
             fi
@@ -860,15 +860,15 @@ jobs:
             if [ $i -eq 30 ]; then
               echo "❌ 헬스체크 실패 - 서비스 로그 확인"
               echo "Docker 서비스 상태:"
-              docker-compose -f docker-compose.prod.yml ps
+              docker compose -f docker-compose.prod.yml ps
               echo "app 로그:"
-              docker-compose -f docker-compose.prod.yml logs app
+              docker compose -f docker-compose.prod.yml logs app
               echo "nginx 로그:"
-              docker-compose -f docker-compose.prod.yml logs nginx
+              docker compose -f docker-compose.prod.yml logs nginx
               echo "postgres 로그:"
-              docker-compose -f docker-compose.prod.yml logs postgres
+              docker compose -f docker-compose.prod.yml logs postgres
               echo "redis 로그:"
-              docker-compose -f docker-compose.prod.yml logs redis
+              docker compose -f docker-compose.prod.yml logs redis
               exit 1
             fi
           done
@@ -909,7 +909,7 @@ jobs:
           
           # Blue-Green 배포를 위한 백업
           if [ -f docker-compose.prod.yml ]; then
-            docker-compose -f docker-compose.prod.yml down
+            docker compose -f docker-compose.prod.yml down
             docker tag ${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest ${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:backup-$(date +%Y%m%d-%H%M%S)
           fi
           
@@ -973,7 +973,7 @@ jobs:
           
           # 기존 서비스 및 이미지 정리
           echo "🧹 기존 서비스 및 이미지 정리 중..."
-          docker-compose -f docker-compose.prod.yml down --remove-orphans || true
+          docker compose -f docker-compose.prod.yml down --remove-orphans || true
           docker stop $(docker ps -aq) 2>/dev/null || true
           docker rm $(docker ps -aq) 2>/dev/null || true
           docker system prune -a -f || true
@@ -985,7 +985,7 @@ jobs:
           sleep 10
           
           # Docker Compose로 서비스 시작
-          docker-compose -f docker-compose.prod.yml up -d
+          docker compose -f docker-compose.prod.yml up -d
           
           # 서비스 시작 대기
           echo "⏳ 서비스 시작을 기다리는 중..."
@@ -1001,7 +1001,7 @@ jobs:
             fi
             if [ $i -eq 10 ]; then
               echo "❌ 헬스체크 실패 - 서비스 로그 확인"
-              docker-compose -f docker-compose.prod.yml logs
+              docker compose -f docker-compose.prod.yml logs
               exit 1
             fi
             sleep 10
